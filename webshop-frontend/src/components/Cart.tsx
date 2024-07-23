@@ -4,8 +4,9 @@ import { AppDispatch } from '../redux/store';
 import { removeFromCart, updateQuantity } from '../redux/cartSlice';
 import { Table, Button, Alert, Modal } from 'react-bootstrap';
 import { ProductDTO } from '../types';
-import { FaTrash } from 'react-icons/fa'; // Importa el ícono de eliminación
-import orderService from '../services/orderService'; // Asegúrate de que la ruta sea correcta
+import { FaTrash } from 'react-icons/fa';
+import orderService from '../services/orderService';
+import { generateGuid } from '../helpers/utils';
 
 export interface CartItem extends ProductDTO {
   quantity: number;
@@ -50,15 +51,22 @@ const Cart: React.FC = () => {
   };
 
   const handlePlaceOrder = async () => {
-    const orderId = '1052E390-D584-4622-94E5-A7A70150D621';
-    const customerId = 'DE4A5A38-5AAB-45C5-B5DC-9D1469E9F9C4';
+    const customerId = localStorage.getItem('customerId');
+
+    if (!customerId) {
+      setModalContent('Customer ID is missing. Please log in.');
+      setShowErrorModal(true);
+      return;
+    }
+
+    const orderId = generateGuid();
 
     const orderData = {
       OrderId: orderId,
       CustomerId: customerId,
       OrderDate: new Date(),
       OrderProducts: cartItems.map(item => ({
-        OrderProductId: item.productId,
+        OrderProductId: generateGuid(),
         ProductId: item.productId,
         Quantity: item.quantity
       }))
@@ -119,7 +127,7 @@ const Cart: React.FC = () => {
                       onClick={() => handleRemove(item.productId)}
                       style={{ marginLeft: '5px' }}
                     >
-                      <FaTrash /> {/* Usa el ícono de eliminación */}
+                      <FaTrash />
                     </Button>
                   </td>
                 </tr>
@@ -141,7 +149,6 @@ const Cart: React.FC = () => {
         </Button>
       </div>
 
-      {/* Modal de éxito */}
       <Modal show={showSuccessModal} onHide={handleCloseSuccessModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -161,7 +168,6 @@ const Cart: React.FC = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal de error */}
       <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>

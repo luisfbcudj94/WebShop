@@ -19,6 +19,13 @@ const ProductList: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    let storedCustomerId = localStorage.getItem('customerId');
+    
+    if (!storedCustomerId) {
+      storedCustomerId = '0040AD21-0CA5-408E-A202-61B1C82B1FD6';
+      localStorage.setItem('customerId', storedCustomerId);
+    }
+
     const fetchProducts = async () => {
       try {
         const data = await getProducts();
@@ -53,6 +60,12 @@ const ProductList: React.FC = () => {
   };
 
   const handleAddToCart = (product: ProductWithQuantity) => {
+    if (product.quantity > product.stockQuantity) {
+      setModalContent('Quantity exceeds available stock.');
+      setShowErrorModal(true);
+      return;
+    }
+
     if (product.quantity > 0) {
       dispatch(addToCart({
         ...product,
@@ -73,7 +86,6 @@ const ProductList: React.FC = () => {
           quantity: product.quantity,
           imageBase64: product.imageBase64,
           description: product.description
-          
         });
       }
 
