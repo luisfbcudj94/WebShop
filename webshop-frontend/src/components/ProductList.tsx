@@ -71,7 +71,9 @@ const ProductList: React.FC = () => {
           productName: product.productName,
           price: product.price,
           quantity: product.quantity,
-          imageBase64: product.imageBase64
+          imageBase64: product.imageBase64,
+          description: product.description
+          
         });
       }
 
