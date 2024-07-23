@@ -73,6 +73,8 @@ This section provides an overview of the database schema created for the WebShop
 5. **Data Types**: Appropriate data types are used for each column to optimize storage and performance (e.g., `DECIMAL` for prices, `NVARCHAR` for text).
 6. **Base64 Image Storage**: Product images are stored as base64 strings in `ImageBase64` for ease of retrieval and integration with front-end applications.
 
+![WebShop Screenshot](images/DB.png)
+
 This schema is designed to provide a solid foundation for a web shop application, ensuring efficient data management and retrieval.
 
 # API Overview
