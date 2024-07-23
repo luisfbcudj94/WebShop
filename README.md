@@ -120,3 +120,75 @@ The WebShop API was developed to provide robust and efficient endpoints for mana
 ### 3. Shopping Cart
 - `POST /api/shoppingcart/update`: Updates the cart with new items or changes to existing items.
 - `POST /api/shoppingcart/checkout`: Processes the current cart and completes the order.
+
+# Frontend Development
+
+The frontend of the WebShop project has been developed using React with Redux to manage the application's global state. Below is a description of the component structure, services used to connect to the API, and key practices employed in frontend development.
+
+## Project Structure
+
+### 1. **Components**
+The main components of the frontend are organized in the `components` folder. The two main components are:
+
+#### 1.1. **Cart.tsx**
+- **Description**: This component displays the user's shopping cart. It allows viewing the added products, updating the quantity of each product, and removing products. It also provides functionality to place the order.
+- **Main Functions**:
+  - Load and display cart items from local storage.
+  - Update product quantities and remove products from the cart.
+  - Process the order and communicate with the backend to create a new order.
+  - Display success and error modals in case of issues during the ordering process.
+
+#### 1.2. **ProductList.tsx**
+- **Description**: This component displays a list of available products in the store. It allows users to view product details and add products to the cart.
+- **Main Functions**:
+  - Retrieve and display the list of products from the API.
+  - Allow users to add products to the cart.
+
+### 2. **Services**
+Services have been created to interact with the API and handle HTTP requests. These services are located in the `services` folder and are designed to simplify communication with the backend.
+
+#### 2.1. **orderService.ts**
+- **Description**: This service handles requests related to orders. It includes methods to add products to the cart and process orders.
+- **Main Methods**:
+  - `addToCart(orderId: string, orderData: OrderData)`: Sends order data to the backend to create or update an order.
+
+#### 2.2. **productService.ts**
+- **Description**: This service handles requests related to products. It includes methods to get the list of products and details of a specific product.
+- **Main Methods**:
+  - `getProducts()`: Retrieves a list of products.
+  - `getProductById(productId: string)`: Retrieves details of a specific product.
+
+## Best Practices
+
+1. **Componentization**: Components are designed to be reusable and are kept separate in different files for better organization and maintainability.
+2. **Abstracted Services**: Services abstract the API communication logic, allowing components to focus solely on UI presentation and specific user interface logic.
+3. **State Management with Redux**: Redux is used to manage the global state of the shopping cart, ensuring consistent and predictable state updates across the application.
+4. **Modularity and Scalability**: The project structure is designed to be modular and scalable, making it easier to add new features and components as the project grows.
+
+This approach ensures a smooth and efficient user experience while keeping the code organized and easy to maintain.
+
+# Running the Application
+
+To get the WebShop application up and running, follow these steps:
+
+## 1. Execute Database Scripts
+
+1. **Run the `CreateDB.sql` Script**
+   - This script creates the necessary database schema.
+   - Use SQL Server Management Studio or any other SQL client to execute the script against your SQL Server instance.
+
+2. **Run the `DataSeed.sql` Script**
+   - This script seeds the database with initial data.
+   - Execute it after running `CreateDB.sql` to populate the database with sample data.
+
+## 2. Configure Database Connection
+
+1. **Set Up Your Connection String**
+   - Open the `appsettings.json` file in the API project.
+   - Configure the connection string to point to your SQL Server database. Update the `ConnectionStrings` section with your database server details.
+
+   Example:
+   ```json
+   "SqlConnectionString": {
+    "default": "Server=LUPEREZ;Database=WebShopDB;Trusted_Connection=True;TrustServerCertificate=True;"
+  }
