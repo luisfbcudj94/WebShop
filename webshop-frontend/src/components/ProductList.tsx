@@ -1,22 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { getProducts } from '../services/productService';
 import { ProductDTO } from '../types';
-import { Table, Spinner, Alert, Button, Form } from 'react-bootstrap';
+import { Table, Spinner, Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
 
+interface ProductWithQuantity extends ProductDTO {
+  quantity: number;
+}
+
 const ProductList: React.FC = () => {
-  const [products, setProducts] = useState<ProductDTO[]>([]);
+  const [products, setProducts] = useState<ProductWithQuantity[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [quantities, setQuantities] = useState<{ [key: string]: number }>({}); 
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
+  const [modalContent, setModalContent] = useState<string>('');
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const data = await getProducts();
-        setProducts(data.items);
+        const productsFromAPI = data.items;
+        const existingCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        const productsWithQuantity = productsFromAPI.map(product => {
+          const cartItem = existingCartItems.find((item: ProductWithQuantity) => item.productId === product.productId);
+          return {
+            ...product,
+            quantity: cartItem ? cartItem.quantity : 0
+          };
+        });
+
+        setProducts(productsWithQuantity);
       } catch (error) {
         setError('Error fetching products');
       } finally {
@@ -28,24 +45,54 @@ const ProductList: React.FC = () => {
   }, []);
 
   const handleQuantityChange = (productId: string, quantity: number) => {
-    setQuantities(prev => ({
-      ...prev,
-      [productId]: quantity
-    }));
+    setProducts(prevProducts => prevProducts.map(product => 
+      product.productId === productId
+        ? { ...product, quantity }
+        : product
+    ));
   };
 
-  const handleAddToCart = (product: ProductDTO) => {
-    if (quantities[product.productId] > 0) {
+  const handleAddToCart = (product: ProductWithQuantity) => {
+    if (product.quantity > 0) {
       dispatch(addToCart({
         ...product,
-        quantity: quantities[product.productId]
+        quantity: product.quantity
       }));
-      setQuantities(prev => ({
-        ...prev,
-        [product.productId]: 0
-      }));
+
+      const existingCartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+
+      const productIndex = existingCartItems.findIndex((item: ProductWithQuantity) => item.productId === product.productId);
+
+      if (productIndex >= 0) {
+        existingCartItems[productIndex].quantity = product.quantity;
+      } else {
+        existingCartItems.push({
+          productId: product.productId,
+          productName: product.productName,
+          price: product.price,
+          quantity: product.quantity,
+          imageBase64: product.imageBase64
+        });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(existingCartItems));
+
+      setModalContent(`Added ${product.productName} to cart.`);
+      setShowSuccessModal(true);
+
+      setProducts(prevProducts => prevProducts.map(p => 
+        p.productId === product.productId
+          ? { ...p, quantity: product.quantity }
+          : p
+      ));
+    } else {
+      setModalContent('Quantity must be greater than 0.');
+      setShowErrorModal(true);
     }
   };
+
+  const handleCloseSuccessModal = () => setShowSuccessModal(false);
+  const handleCloseErrorModal = () => setShowErrorModal(false);
 
   if (loading) return <Spinner animation="border" />;
   if (error) return <Alert variant="danger">{error}</Alert>;
@@ -79,16 +126,16 @@ const ProductList: React.FC = () => {
                   <img
                     src={`data:image/png;base64,${product.imageBase64}`}
                     alt={product.productName}
-                    style={{ width: '100px', height: 'auto' }}
+                    style={{ width: '100px', height: 'auto', maxHeight: '200px' }}
                   />
                 )}
               </td>
               <td>
                 <Form.Control
                   type="number"
-                  value={quantities[product.productId] || 0}
-                  onChange={(e) => handleQuantityChange(product.productId, parseInt(e.target.value, 10))}
-                  min="0"
+                  value={product.quantity}
+                  onChange={(e) => handleQuantityChange(product.productId, Math.max(1, parseInt(e.target.value, 10)))}
+                  min="1"
                   max={product.stockQuantity}
                 />
               </td>
@@ -104,9 +151,46 @@ const ProductList: React.FC = () => {
           ))}
         </tbody>
       </Table>
+
+      <Modal show={showSuccessModal} onHide={handleCloseSuccessModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <span style={{ color: 'green' }}>Success</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ color: 'green', fontSize: '24px', marginRight: '10px' }}>✔️</span>
+            {modalContent}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="success" onClick={handleCloseSuccessModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <span style={{ color: 'red' }}>Error</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ color: 'red', fontSize: '24px', marginRight: '10px' }}>⚠️</span>
+            {modalContent}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseErrorModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
 export default ProductList;
-
