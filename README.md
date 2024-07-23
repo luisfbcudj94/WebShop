@@ -192,3 +192,38 @@ To get the WebShop application up and running, follow these steps:
    "SqlConnectionString": {
     "default": "Server=LUPEREZ;Database=WebShopDB;Trusted_Connection=True;TrustServerCertificate=True;"
   }
+
+# Running the Application
+
+To get the WebShop application up and running, follow these steps:
+
+## 3. Run the API Project
+
+1. **Build and Run the API Project**
+   - Open the API project in Visual Studio or your preferred IDE.
+   - Build the project to compile the backend code.
+   - Run the project to start the backend API server.
+   - Ensure that the API is running on the configured port and is accessible.
+
+## 4. Run the Frontend Project
+
+1. **Install Dependencies**
+   - Navigate to the frontend project directory using a terminal or command prompt.
+   - Run the following command to install all required dependencies:
+     ```bash
+     npm install
+     ```
+
+2. **Start the Frontend Application**
+   - Execute the following command to start the frontend development server:
+     ```bash
+     npm start
+     ```
+   - The application should open in your default web browser. If it doesn't, manually navigate to `http://localhost:3000` (or the port specified in your `package.json`).
+
+## Additional Notes
+
+- Ensure that both the API and frontend applications are running simultaneously to interact with the complete application.
+- If you encounter any issues, check the logs of both the backend API and frontend for error messages and troubleshoot accordingly.
+
+Following these steps will set up and run the WebShop application on your local machine.
