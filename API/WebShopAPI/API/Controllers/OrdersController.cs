@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebShopAPI.Application.DTOs;
 using WebShopAPI.Application.Interfaces;
 using WebShopAPI.Application.Services;
 
@@ -17,14 +18,12 @@ namespace WebShopAPI.API.Controllers
             _productService = productService;
         }
 
-        [HttpPost("orders/{orderId}/products/{productId}/addtocart")]
+        [HttpPost("{orderId}/addtocart")]
         public async Task<IActionResult> AddToCart(
             Guid orderId,
-            Guid productId,
-            [FromQuery] Guid customerId,
-            [FromQuery] int quantity)
+            OrderDTO data)
         {
-            var result = await _productService.AddToCartAsync(orderId, productId, customerId, quantity);
+            var result = await _productService.AddToCartAsync(orderId, data);
             if (!result)
                 return BadRequest();
             return Ok();

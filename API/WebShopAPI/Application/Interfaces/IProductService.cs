@@ -7,7 +7,7 @@ namespace WebShopAPI.Application.Interfaces
     {
         Task<PagedResult<ProductDTO>> GetProductsAsync(int page, int pageSize);
         Task<ProductDTO> GetProductByIdAsync(Guid productId);
-        Task<bool> AddToCartAsync(Guid orderId, Guid productId, Guid customerId, int quantity);
+        Task<bool> AddToCartAsync(Guid orderId, OrderDTO data);
         Task<bool> UpdateProductAsync(ProductDTO productDto);
     }
 }

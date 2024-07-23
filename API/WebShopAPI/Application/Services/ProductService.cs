@@ -55,13 +55,28 @@ namespace WebShopAPI.Application.Services
             };
         }
 
-        public async Task<bool> AddToCartAsync(Guid orderId, Guid productId, Guid customerId, int quantity)
+        public async Task<bool> AddToCartAsync(Guid orderId, OrderDTO data)
         {
-            // Implementation to add product to cart
-            var product = await _productRepository.GetProductByIdAsync(productId);
-            if (product == null || product.StockQuantity < quantity) return false;
+            foreach (var orderProduct in data.OrderProducts)
+            {
+                var product = await _productRepository.GetProductByIdAsync(orderProduct.ProductId);
 
-            return await _orderService.AddProductToCartAsync(orderId, productId, customerId, quantity);
+                if (product == null || product.StockQuantity < orderProduct.Quantity)
+                {
+                    return false;
+                }
+            }
+
+            foreach (var orderProduct in data.OrderProducts)
+            {
+                var result = await _orderService.AddProductToCartAsync(orderId, orderProduct.ProductId, data.CustomerId, orderProduct.Quantity);
+                if (!result)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public async Task<bool> UpdateProductAsync(ProductDTO productDto)
