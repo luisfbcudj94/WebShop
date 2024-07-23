@@ -3,29 +3,32 @@ import ProductList from './components/ProductList';
 import Cart from './components/Cart';
 import logo from './logo.svg';
 import './App.css';
+import { Navbar, Nav } from 'react-bootstrap';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-      <div>
-        <ProductList />
-        <Cart />
+    <Router>
+      <div className="App">
+        <Navbar bg="dark" variant="dark" expand="lg">
+          <Navbar.Brand href="/">WebShop</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              <Nav.Link href="/products">Products</Nav.Link>
+              <Nav.Link href="/cart">Cart</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+        <div>
+          <Routes>
+            <Route path="/products" element={<ProductList />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/" element={<ProductList />} /> {/* Default route */}
+          </Routes>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 }
 
