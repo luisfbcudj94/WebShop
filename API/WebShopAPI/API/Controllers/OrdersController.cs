@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebShopAPI.Application.Interfaces;
+using WebShopAPI.Application.Services;
 
 namespace WebShopAPI.API.Controllers
 {
@@ -8,10 +9,25 @@ namespace WebShopAPI.API.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IProductService _productService;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IOrderService orderService, IProductService productService)
         {
             _orderService = orderService;
+            _productService = productService;
+        }
+
+        [HttpPost("orders/{orderId}/products/{productId}/addtocart")]
+        public async Task<IActionResult> AddToCart(
+            Guid orderId,
+            Guid productId,
+            [FromQuery] Guid customerId,
+            [FromQuery] int quantity)
+        {
+            var result = await _productService.AddToCartAsync(orderId, productId, customerId, quantity);
+            if (!result)
+                return BadRequest();
+            return Ok();
         }
 
         [HttpGet]
@@ -29,5 +45,6 @@ namespace WebShopAPI.API.Controllers
                 return NotFound();
             return Ok(order);
         }
+
     }
 }

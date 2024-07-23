@@ -14,13 +14,6 @@ namespace WebShopAPI.API.Controllers
             _orderService = orderService;
         }
 
-        [HttpGet]
-        public IActionResult GetCart()
-        {
-            var cart = _orderService.GetCart();
-            return Ok(cart);
-        }
-
         [HttpPost("update")]
         public async Task<IActionResult> UpdateCart([FromBody] OrderDTO orderDto)
         {

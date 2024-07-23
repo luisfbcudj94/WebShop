@@ -74,3 +74,49 @@ This section provides an overview of the database schema created for the WebShop
 6. **Base64 Image Storage**: Product images are stored as base64 strings in `ImageBase64` for ease of retrieval and integration with front-end applications.
 
 This schema is designed to provide a solid foundation for a web shop application, ensuring efficient data management and retrieval.
+
+# API Overview
+
+The WebShop API was developed to provide robust and efficient endpoints for managing products, categories, customers, and orders. Below are the key practices and architecture used in creating the API.
+
+## Architecture and Practices
+
+### 1. **Layered Architecture**
+- **Presentation Layer**: Contains the controllers that handle HTTP requests and responses.
+- **Application Layer**: Contains services that implement business logic.
+- **Core Layer**: Contains domain entities and interfaces.
+- **Infrastructure Layer**: Contains the implementation of repositories and database context.
+
+### 2. **Dependency Injection**
+- Utilized to manage dependencies and promote loose coupling. Services and repositories are injected into controllers and other services.
+
+### 3. **DTOs (Data Transfer Objects)**
+- Used to transfer data between layers. DTOs are used in service methods to encapsulate the data sent to and received from the API.
+
+### 4. **Asynchronous Programming**
+- All data access methods are implemented asynchronously using `async` and `await` to improve scalability and performance.
+
+### 5. **Entity Framework Core**
+- Used as the ORM (Object-Relational Mapper) for database operations. It simplifies data access by allowing us to work with C# objects instead of SQL queries.
+
+### 6. **Automapper**
+- Used for object-to-object mapping, simplifying the conversion between domain models and DTOs.
+
+### 7. **Validation**
+- Data annotations and FluentValidation are used to validate incoming data to ensure data integrity and consistency.
+
+## Key Endpoints
+
+### 1. Catalog
+- `GET /api/Catalog/products`: Retrieves a paginated list of products.
+- `GET /api/Catalog/products/{id}`: Retrieves a product by its ID.
+
+
+### 2. Orders
+- `GET /api/orders`: Retrieves a list of orders.
+- `GET /api/orders/{id}`: Retrieves an order by its ID.
+- `POST /api/orders/{orderId}/products/{productId}/addtocart`: Adds a product to an existing or new order's cart for a specific customer.
+
+### 3. Shopping Cart
+- `POST /api/shoppingcart/update`: Updates the cart with new items or changes to existing items.
+- `POST /api/shoppingcart/checkout`: Processes the current cart and completes the order.

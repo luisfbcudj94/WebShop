@@ -97,11 +97,6 @@ namespace WebShopAPI.Application.Services
             return true;
         }
 
-        public OrderDTO GetCart()
-        {
-            return new OrderDTO(); 
-        }
-
         public async Task<bool> UpdateCartAsync(OrderDTO orderDto)
         {
             return true;

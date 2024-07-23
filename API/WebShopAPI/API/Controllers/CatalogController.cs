@@ -29,18 +29,5 @@ namespace WebShopAPI.API.Controllers
                 return NotFound();
             return Ok(product);
         }
-
-        [HttpPost("orders/{orderId}/products/{productId}/addtocart")]
-        public async Task<IActionResult> AddToCart(
-            Guid orderId,
-            Guid productId,
-            [FromQuery] Guid customerId,
-            [FromQuery] int quantity)
-        {
-            var result = await _productService.AddToCartAsync(orderId, productId, customerId, quantity);
-            if (!result)
-                return BadRequest();
-            return Ok();
-        }
     }
 }
